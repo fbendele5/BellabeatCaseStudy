@@ -19,7 +19,7 @@ The data used for this case study can be accessed through Kaggle in 18 CVS files
 
 Information regarding minute-level output for physical activity, heart rate, steps and sleep monitoring can be found. Altogether, thirty Fitbit users were used in this data collection from a one month period only in 2016. With a sample size of 30, it is important to note that this number is not big enough to be a fair representative of all FitBit users. Demographic information about the users (such as gender and age) was not included, which would have been beneficial for marketing analysis to target specific customers.
 
-As 'git stuts' dailyActivity_merged.csv  provides a good summary of steps and calories burned and the sleepDay_merged.csv file provides sleep data these are good overall files to use to analyze patricipant usage. As fitness devices are generally used to track overall health and weight, the file weightLogInfo_merged containing weight data will also be used.
+As 'git status'dailyActivity_merged.csv  provides a good summary of steps and calories burned and the sleepDay_merged.csv file provides sleep data these are good overall files to use to analyze patricipant usage. As fitness devices are generally used to track overall health and weight, the file weightLogInfo_merged containing weight data will also be used.
 
 
 
