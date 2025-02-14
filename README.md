@@ -34,6 +34,18 @@ All R code can be viewed [here](URL).
     install.packages("lm.beta))
 ```
 
+2. Load CSV files containing the necessary data
+``` activity <- read.csv("dailyActivity_merged.csv")
+    steps_hourly <- read.csv("hourlySteps_merged.csv")
+    daily_sleep <- read.csv("sleepDay_merged.csv")
+    weight <- read.csv("weightLogInfo_merged.csv")
+```
+3. Count number of participants in each data set by focusing on distinct IDs
+``` n_distinct(daily_activity$Id) ```
+``` ## [1] 33 ```
+
+   
+
 ## Visualization
 
 
