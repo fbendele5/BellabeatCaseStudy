@@ -45,21 +45,25 @@ All R code can be viewed [here](URL).
     ## [1] 33 
 ```
 
-``` n_distinct(hourly_steps$Id)
+```
+    n_distinct(hourly_steps$Id)
     ## [1] 33
 ```
 
-``` n_distinct(daily_sleep$Id)
+```
+    n_distinct(daily_sleep$Id)
     ## [1] 24
 ```
 
-``` n_distinct(weight$Id)
+```
+    n_distinct(weight$Id)
     ## [1] 8
 ```
 Since a very few participants provided weight information, this will be excluded  from the analysis.
 
 5. Start looking at and cleaning up the data sets
-``` # Start with the daily_sleep data
+```
+# Start with the daily_sleep data
 head(daily_sleep)
 
 # The 12:00:00 AM time stamp on each observation is redundant so it should be removed to make the data easier to work with
