@@ -41,9 +41,15 @@ All R code can be viewed [here](URL).
     weight <- read.csv("weightLogInfo_merged.csv")
 ```
 3. Count number of participants in each data set by focusing on distinct IDs
-``` n_distinct(daily_activity$Id) ```
-``` ## [1] 33 ```
+``` n_distinct(daily_activity$Id)
+```
+``` ## [1] 33 
+```
 
+```n_distinct(hourly_steps$Id)
+```
+````## [1] 33
+```
    
 
 ## Visualization
