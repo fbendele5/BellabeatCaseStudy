@@ -42,13 +42,11 @@ All R code can be viewed [here](URL).
 ```
 3. Count number of participants in each data set by focusing on distinct IDs
 ``` n_distinct(daily_activity$Id)
-```
-``` ## [1] 33 
+    ## [1] 33 
 ```
 
 ```n_distinct(hourly_steps$Id)
-```
-````## [1] 33
+    ## [1] 33
 ```
    
 
