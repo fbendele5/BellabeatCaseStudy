@@ -23,7 +23,7 @@ Information regarding minute-level output for physical activity, heart rate, ste
 
 The file `dailyActivity_merged.csv` offers a good summary of activity and calories burned while the `sleepDay_merged.csv` file looks into sleep data. Both of these files provide information to analyze participant usage. In addition, the file ~hourlySteps_merged.csv~ looks more closely at the timestamp of steps. Since fitness devices are typically used to track overall health and weight, the file `weightLogInfo_merged` will also be used as it contains weight data.
 
-## Transformation and Analysis
+## Transformation 
 
 All R code can be viewed [here](URL). 
 
@@ -41,7 +41,8 @@ All R code can be viewed [here](URL).
     weight <- read.csv("weightLogInfo_merged.csv")
 ```
 3. Count number of participants in each data set by focusing on distinct IDs
-``` n_distinct(daily_activity$Id)
+```
+    n_distinct(daily_activity$Id)
     ## [1] 33 
 ```
 
@@ -74,6 +75,54 @@ colnames(daily_sleep)[2] = "Date"
 head(daily_sleep)
 ```
 
+```
+    # Move onto the daily_activity data
+    head(daily_activity)
+# The LoggedActivitiesDistance and SedentaryActiveDistance columns lack valuable information so it will be removed from the analysis 
+daily_activity <- daily_activity[c(-6, -10)]
+# Renaming column
+colnames(daily_activity)[2] = "Date"
+# View updated Data
+head(daily_activity)
+```
+
+```
+    # Finallythe hourly_steps data
+head(hourly_steps)
+
+# The time associated with the date is relevant so it must be kept, but it will be easier to work with if it's separated into its own column 
+hourly_steps <- hourly_steps %>% separate(ActivityHour, c("Date", "Hour"), sep = "^\\S*\\K")
+# View the updated dataframe
+head(hourly_steps)
+
+#Because the Id variable is currently numerical but should be used as nominal, the format must be changed in each data set.
+daily_activity$Id <- as.character(daily_activity$Id)
+daily_sleep$Id <- as.character(daily_sleep$Id)
+hourly_steps$Id <- as.character(hourly_steps$Id)
+```
+
+## Analysis
+1. Graph key variables and look for outliers in the data.
+
+```
+    summary(daily_activity$TotalSteps)
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##       0    3790    7406    7638   10727   36019
+```
+
+```
+    # Create a box and whisker plot for outliers
+    ggplot(daily_activity, aes(x = TotalSteps)) +
+  geom_boxplot()
+    ## The majority of the daily total steps revolve around 4000-11000, which indicates that there may be possible outliers on the high end.
+```
+
+``` steps_upper <- quantile(daily_activity$TotalSteps, .9985, na.rm = TRUE)
+# This shows that 99.85% of the observations are at 28,680 or below. In general, values above this number are more than 3 standard deviations from the mean, which reveals that they are outliers.
+
+2. Extract more information by running descriptive statistics
+
+   
 ## Visualization
 
 
