@@ -45,10 +45,17 @@ All R code can be viewed [here](URL).
     ## [1] 33 
 ```
 
-```n_distinct(hourly_steps$Id)
+``` n_distinct(hourly_steps$Id)
     ## [1] 33
 ```
-   
+
+``` n_distinct(daily_sleep$Id)
+    ## [1] 24
+```
+
+``` n_distinct(weight$Id)
+    ## [1] 8
+```
 
 ## Visualization
 
