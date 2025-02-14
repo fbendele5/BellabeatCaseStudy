@@ -56,6 +56,19 @@ All R code can be viewed [here](URL).
 ``` n_distinct(weight$Id)
     ## [1] 8
 ```
+Since a very few participants provided weight information, this will be excluded  from the analysis.
+
+5. Start looking at and cleaning up the data sets
+``` # Start with the daily_sleep data
+head(daily_sleep)
+
+# The 12:00:00 AM time stamp on each observation is redundant so it should be removed to make the data easier to work with
+daily_sleep$SleepDay <- (gsub('12:00:00 AM', '', daily_sleep$SleepDay))
+# Rename the column
+colnames(daily_sleep)[2] = "Date"
+# View updated data
+head(daily_sleep)
+```
 
 ## Visualization
 
