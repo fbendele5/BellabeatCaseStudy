@@ -1,0 +1,158 @@
+--- R Coding ---
+
+# Load library and files
+
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+library(lm.beta)
+
+activity <- read.csv("dailyActivity_merged.csv")
+steps_hourly <- read.csv("hourlySteps_merged.csv")
+weight <- read.csv("weightLogInfo_merged.csv")
+sleep <- read.csv("sleepDay_merged.csv")
+
+# Identify number of participants in each data set by counting distincts IDs
+
+n_distint(activity$Id)
+n_distinct(steps_hourly$Id)
+n_distinct(sleep$id)
+n_distinct(weight$Id)
+
+# Clean up data sets
+# Start cleaning sleep data set
+
+head(sleep)
+sleep$SleepDay <- (gsub('12:00:00 AM', '', sleep$SleepDay))  #Remove the redudant 12:00:00 AM time stamp for each observation
+colnames(sleep[2]) = "Date" #renaming the column
+
+# Now clean the activity data set 
+
+head(activity)
+activity <- activity[c(-6, -10)] #Removing LoggedActivitiesDistance and SedentaryActiveDistance columns
+colnames(activity)[2] = "Date"
+
+# Finally clean steps_hourly data set
+
+head(steps_hourly)
+steps_hourly <- steps_hourly %>% separate(ActivityHour, c("Date", "Hour"), sep = "^\\S*\\K") #Separate time and data into their own columns
+
+# Change format of data set
+
+activity$Id <- as.character(activity$Id)
+sleep$Id <- as.character(sleep$Id)
+steps_hourly$Id <- as.character(steps_hourly$Id)
+
+# Data exploration 
+# Graph key variables and check for outliers in the data
+
+summary(activity$TotalSteps)
+ggplot(activity, aes(x= TotalSteps)) + 
+  geom_boxplot() 
+steps_upper <- quantile(activity$TotalSteps, .9985, na.rm = TRUE)
+activity <- subset(activity, TotalSteps <= 28680)
+
+# Average amount of sleep for each participant
+
+mean_sleep <- sleep %>% 
+  group_by(Id) %>% 
+  summarize(mean_sleep = mean(TotalMinutesAsleep)) %>% 
+  elect(Id, mean_sleep) %>% 
+  arrange(mean_sleep) %>%
+  as.data.frame()
+head(mean_sleep)
+
+# Percentage of time that participants actually spend sleeping while laying in bed
+
+sleep %>%
+  group_by(Id) %>%
+  mutate(percent_sleep = (TotalMinutesAsleep/TotalTimeInBed)*100) %>% 
+  select(Id, percent_sleep) %>% 
+  summarize(avg_persleep = mean(percent_sleep)) %>% 
+  arrange(avg_persleep) %>% 
+  mutate_if(is.numeric, round, 2)
+
+#Summary stats of different activity levels
+
+library(psych)
+
+activity_level <- activity[9:12]
+describe(activity_level)
+
+# Activity level by participant 
+
+activity_id <- activity %>% 
++ group_by(Id) %>% 
++ summarize(sum_very = sum(VeryActiveMinutes), 
++ sum_fairly = sum(FairlyActiveMinutes), 
++ sum_lightly = sum(LightlyActiveMinutes), 
++ sum_sed = sum(SedentaryMinutes)) %>% 
++ select(Id, sum_very, sum_fairly, sum_lightly, sum_sed) %>% 
++ as.data.frame()
+> head(activity_id)
+
+# Most steps taken during a single hour
+
+steps_hourly %>% 
+  group_by(Hour) %>% 
+  summarize(mean_steps = mean(StepTotal)) %>% 
+  select(Hour, mean_steps) %>% 
+  arrange(desc(mean_steps)) %>% 
+  head(1)
+
+mean_steps <- steps_hourly %>% 
+  group_by(Hour) %>% 
+  summarize(mean_steps = mean(StepTotal)) %>% 
+  select(Hour, mean_steps) %>% 
+  arrange(desc(Hour)) %>% 
+  as.data.frame() 
+
+# Mean and standard deviation for total steps taken by participants 
+> steps_byId <- steps_hourly %>%
+  group_by(Id) %>% 
+  summarize(mean_steps_id = mean(StepTotal), sd_steps_id = sd(StepTotal)) %>%
+  mutate_if(is.numeric, round, 2) %>% 
+  as.data.frame()
+head(stpes_byId)
+
+# Graph the relationship between steps taken in a day and sedentary minutes
+ggplot(data=activity, aes(x=TotalSteps, y=SedentaryMinutes)) +
+  geom_point() +
+  geom_smooth() +
+  labs(title="Total Steps Versus Sedentary Minutes", x = "Steps", y = "Minutes")
+sed_steps_lr <- lm(SedentaryMinutes ~ TotalSteps, activity)  # Confirm if there is any correlation
+summary(sed_steps_lr)
+
+# Graph average sleep of each individual participant with how their sleep compares to the overall average of all participants
+
+options(scipen = 999)
+ggplot(mean_sleep, aes(x= Id, y = mean_sleep)) +
+  geom_col(aes(reorder(Id, +mean_sleep), y= mean_sleep)) +
+  labs(title = "Average Minutes of Sleep", x = "Participant Id", y = "Minutes") + 
+  theme(axis.text.x = element_text(angle = 90)) +
+  geom_hline(yintercept = mean(mean_sleep$mean_sleep), color = "green")
+
+# Graph average steps per hour
+
+ggplot(mean_steps, aes(x = Hour, y = mean_steps)) + 
+  geom_col(aes(reorder(Hour, +mean_steps), mean_steps)) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(title = "Average Steps Taken Per Hour of Day", x = "Hour", y = "Average Steps")
+
+# Find new relationship between variables in activity_id and steps_byId
+
+combined_data <- merge(activity_id, steps_byId, by = "Id")
+  num_data <- combined_data[-1]
+  cor(num_data)
+
+ggplot(combined_data, aes(x = mean_steps_id, y = sum_very)) + 
+  geom_point() +
+  labs(title = "Average Steps Taken In A Day Compared to Very Active Minutes", x = "Average Steps", y = "Very Active Minutes")
+
+
+
+
+
+
+
+
