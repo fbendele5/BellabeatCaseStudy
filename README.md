@@ -137,6 +137,16 @@ mean_sleep <- sleep %>%
     as.data.frame()
     head(mean_sleep)
 ```
+
+```
+##           Id mean_sleep
+## 1 2320127002    61.0000
+## 2 7007744171    68.5000
+## 3 4558609924   127.6000
+## 4 3977333714   293.6429
+## 5 1644430081   294.0000
+## 6 8053475328   297.0000
+```
 Find the percentage of time the participants actually spent sleeping while laying in bed
 
 ```
@@ -148,7 +158,24 @@ sleep %>%
     arrange(avg_persleep) %>% 
     mutate_if(is.numeric, round, 2)
 ```
-# Most participants slept around 90% of the time they spent in bed with only 4 participants spending a smaller percentage of time sleeping with the lowest being 63.37%
+
+```
+## # A tibble: 24 × 2
+##   Id         avg_persleep
+##   <chr>             <dbl>
+## 1 3977333714         63.4
+## 2 1844505072         67.8
+## 3 1644430081         88.2
+## 4 2320127002         88.4
+## 5 4558609924         90.7
+## 6 2347167796         91.0
+## 7 5553957443         91.5
+## 8 8378563200         91.9
+## 9 4445114986         92.5
+## 10 4020332650         93.0
+## # ℹ 14 more rows
+```
+Most participants slept around 90% of the time they spent in bed with only 4 participants spending a smaller percentage of time sleeping with the lowest being 63.37%
 
 ### Activity Levels
 
@@ -159,6 +186,19 @@ library(psych)
 
 activity_level <- activity[9:12] 
 describe(activity_level)
+```
+
+```
+##                     vars   n   mean     sd median trimmed    mad min
+## VeryActiveMinutes       1 938  20.91  32.35      4   13.92   5.93   0
+## FairlyActiveMinutes     2 938  13.50  19.94      6    9.32   8.90   0
+## LightlyActiveMinutes    3 938 192.58 109.02    199  193.33 102.30   0
+## SedentaryMinutes        4 938 991.29 301.57   1059  998.80 388.44   0
+##                      max range  skew kurtosis   se
+## VeryActiveMinutes     210   210  2.15     5.61 1.06
+## FairlyActiveMinutes   143   143  2.49     8.05 0.65
+## LightlyActiveMinutes  518   518 -0.04    -0.37 3.56
+## SedentaryMinutes     1440  1440 -0.29    -0.68 9.85
 ```
 
 Activity levels by participant
@@ -175,6 +215,16 @@ activity_id <- activity %>%
 head(activity_id)
 ```
 
+```
+##           Id sum_very sum_fairly sum_lightly sum_sed
+## 1 1503960366     1200        594        6818   26293
+## 2 1624580081       83        117        4587   37970
+## 3 1644430081      287        641        5354   34856
+## 4 1844505072        4         40        3579   37405
+## 5 1927972279       41         24        1196   40840
+## 6 2022484408     1125        600        7981   34490
+```
+
 ###Steps
 
 Find which hour of the day had the most steps taken on average
@@ -187,7 +237,14 @@ steps_hourly %>%
     arrange(desc(mean_steps)) %>% 
     head(1)
 ```
-# 6 PM had the most steps taken with an average of around 600 steps
+
+```
+# A tibble: 1 × 2
+  Hour          mean_steps
+  <chr>              <dbl>
+1 " 6:00:00 PM"       599.
+```
+6 PM had the most steps taken with an average of around 600 steps
 
 #Create a data frame with average hourly steps for visualizations later
 
@@ -210,6 +267,15 @@ steps_byId <- steps_hourly %>%
     as.data.frame()
 head(steps_byId)
 ```
+```
+##           Id mean_steps_id sd_steps_id
+## 1 1503960366        522.38      836.48
+## 2 1624580081        241.51      760.46
+## 3 1644430081        307.81      589.61
+## 4 1844505072        109.36      232.06
+## 5 1927972279         38.59      164.17
+## 6 2022484408        477.87      861.30
+```
 
 ## Visualization
 
@@ -227,6 +293,26 @@ sed_steps_lr <- lm(SedentaryMinutes ~ TotalSteps, activity)
 summary(sed_steps_lr)
 ```
 
+```
+##
+## Call:
+## lm(formula = SedentaryMinutes ~ TotalSteps, data = activity)
+## 
+## Residuals:
+##    Min      1Q  Median      3Q     Max 
+## -1145.7  -234.3   103.0   240.8   539.1 
+##
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  1.146e+03  1.697e+01   67.53   <2e-16 ***
+## TotalSteps  -2.041e-02  1.873e-03  -10.89   <2e-16 ***
+## ---
+## Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+##
+## Residual standard error: 284.2 on 936 degrees of freedom
+## Multiple R-squared:  0.1125,	Adjusted R-squared:  0.1116 
+## F-statistic: 118.7 on 1 and 936 DF,  p-value: < 2.2e-16
+``` 
 Results confirm there is little correlation with an r^2 value of .11
 
 Visualize average amount of time participants slept each night during the length of the study
@@ -259,6 +345,22 @@ num_data <- combined_data[-1]
 cor(num_data)
 ```
 
+```
+##                 sum_very sum_fairly sum_lightly     sum_sed
+## sum_very       1.00000000  0.3310092  0.08229265 -0.01609547
+## sum_fairly     0.33100923  1.0000000  0.12218239 -0.14896700
+## sum_lightly    0.08229265  0.1221824  1.00000000 -0.02534821
+## sum_sed       -0.01609547 -0.1489670 -0.02534821  1.00000000
+## mean_steps_id  0.69782565  0.4695951  0.50800458 -0.19685056
+## sd_steps_id    0.71214478  0.4478268  0.25023909 -0.04474601
+##              mean_steps_id sd_steps_id
+## sum_very          0.6978256  0.71214478
+## sum_fairly        0.4695951  0.44782678
+## sum_lightly       0.5080046  0.25023909
+## sum_sed          -0.1968506 -0.04474601
+## mean_steps_id     1.0000000  0.91264532
+## sd_steps_id       0.9126453  1.00000000
+```
 
 # Based on the correlation matrix, there is little correlation between the different activity levels
 # There is a moderate correlation(.7) between mean steps taken and very active minutes
