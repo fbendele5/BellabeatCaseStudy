@@ -118,8 +118,9 @@ hourly_steps$Id <- as.character(hourly_steps$Id)
     ## The majority of the daily total steps revolve around 4000-11000, which indicates that there may be possible outliers on the high end.
 ```
 
-``` steps_upper <- quantile(daily_activity$TotalSteps, .9985, na.rm = TRUE)
-# This shows that 99.85% of the observations are at 28,680 or below. In general, values above this number are more than 3 standard deviations from the mean, which reveals that they are outliers.
+``` steps_upper <- quantile(daily_activity$TotalSteps, .9985, na.rm = TRUE) 
+# This shows that 99.85% of the observations are at 28,680 or below. In general, values above this number are more than 3 standard deviations from the mean, which reveals that they are outliers. 
+```
 
 2. Extract more information by running descriptive statistics
 
