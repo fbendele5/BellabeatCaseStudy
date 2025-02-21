@@ -114,6 +114,7 @@ hourly_steps$Id <- as.character(hourly_steps$Id)
     # Create a box and whisker plot for outliers
     ggplot(daily_activity, aes(x = TotalSteps)) +
   geom_boxplot()
+
     ## The majority of the daily total steps revolve around 4000-11000, which indicates that there may be possible outliers on the high end.
 ```
 
@@ -122,8 +123,180 @@ hourly_steps$Id <- as.character(hourly_steps$Id)
 
 2. Extract more information by running descriptive statistics
 
-   
+### Sleep Data
+
+Find the average amount of sleep for each participant
+
+```
+mean_sleep <- sleep %>% 
+    group_by(Id) %>%
+    summarize(mean_sleep = mean(TotalMinutesAsleep)) %>%
+    select(Id, mean_sleep) %>%
+    arrange(mean_sleep) %>%
+    as.data.frame()
+    head(mean_sleep)
+```
+Find the percentage of time the participants actually spent sleeping while laying in bed
+
+```
+sleep %>%
+    group_by(Id) %>%
+    mutate(percent_sleep = (TotalMinutesAsleep/TotalTimeInBed)*100) %>% 
+    select(Id, percent_sleep) %>% 
+    summarize(avg_persleep = mean(percent_sleep)) %>% 
+    arrange(avg_persleep) %>% 
+    mutate_if(is.numeric, round, 2)
+```
+# Most participants slept around 90% of the time they spent in bed with only 4 participants spending a smaller percentage of time sleeping with the lowest being 63.37%
+
+### Activity Levels
+
+Summary stats of different activity levels
+
+```
+library(psych)
+
+activity_level <- activity[9:12] 
+describe(activity_level)
+```
+
+Activity levels by participant
+
+```
+activity_id <- activity %>%
+    group_by(Id) %>% 
+    summarize(sum_very = sum(VeryActiveMinutes), 
+    sum_fairly = sum(FairlyActiveMinutes), 
+    sum_lightly = sum(LightlyActiveMinutes), 
+    sum_sed = sum(SedentaryMinutes)) %>% 
+    select(Id, sum_very, sum_fairly, sum_lightly, sum_sed) %>% 
+    as.data.frame()
+head(activity_id)
+```
+
+###Steps
+
+Find which hour of the day had the most steps taken on average
+
+```
+steps_hourly %>% 
+    group_by(Hour) %>% 
+    summarize(mean_steps = mean(StepTotal)) %>% 
+    select(Hour, mean_steps) %>% 
+    arrange(desc(mean_steps)) %>% 
+    head(1)
+```
+# 6 PM had the most steps taken with an average of around 600 steps
+
+#Create a data frame with average hourly steps for visualizations later
+
+```
+mean_steps <- steps_hourly %>%  
+    group_by(Hour) %>% 
+    summarize(mean_steps = mean(StepTotal)) %>% 
+    select(Hour, mean_steps) %>% 
+    arrange(desc(Hour)) %>% 
+    as.data.frame() 
+```
+
+Find the mean and standard deviation for total steps taken by participant
+
+```
+steps_byId <- steps_hourly %>% 
+    group_by(Id) %>% 
+    summarize(mean_steps_id = mean(StepTotal), sd_steps_id = sd(StepTotal)) %>%
+    mutate_if(is.numeric, round, 2) %>% 
+    as.data.frame()
+head(steps_byId)
+```
+
 ## Visualization
 
+Visualize relationship between steps taken in a day and sedentary minutes
+```
+ggplot(data=activity, aes(x=TotalSteps, y=SedentaryMinutes)) + 
+    geom_point() + 
+    geom_smooth() + 
+    labs(title="Total Steps Versus Sedentary Minutes", x = "Steps", y = "Minutes")
+```
+There shows to be no correlation between total daily steps taken and sedentary minutes. This can be confirmed with a simple linear regression:
+
+```
+sed_steps_lr <- lm(SedentaryMinutes ~ TotalSteps, activity)
+summary(sed_steps_lr)
+```
+
+Results confirm there is little correlation with an r^2 value of .11
+
+Visualize average amount of time participants slept each night during the length of the study
+```
+options(scipen = 999)
+ggplot(mean_sleep, aes(x= Id, y = mean_sleep)) +
+    geom_col(aes(reorder(Id, +mean_sleep), y= mean_sleep)) +
+    labs(title = "Average Minutes of Sleep", x = "Participant Id", y = "Minutes") + 
+    theme(axis.text.x = element_text(angle = 90)) +
+    geom_hline(yintercept = mean(mean_sleep$mean_sleep), color = "green")
+```
+#This graph displays the average sleep of each participant indivdiually as well as how their sleep compares to the overall average across all participants
+
+Visualize average steps per hour
+
+```
+ggplot(mean_steps, aes(x = Hour, y = mean_steps)) + 
++ geom_col(aes(reorder(Hour, +mean_steps), mean_steps)) +
++ theme(axis.text.x = element_text(angle = 90)) +
++ labs(title = "Average Steps Taken Per Hour of Day", x = "Hour", y = "Average Steps")
+```
+From this graph, the most steps were taken in the evening from 5-7 PM while the least amount of steps were in the middle of the night from 12-4 AM
+
+Now, two data sets that were previously created, activity_id and steps_byId, will be combined to find new relationships between key variables
+
+```
+combined_data <- merge(activity_id, steps_byId, by = "Id")
+#Put the numerical variables into a separate data frame then run a correlation matrix
+num_data <- combined_data[-1]
+cor(num_data)
+```
+
+
+# Based on the correlation matrix, there is little correlation between the different activity levels
+# There is a moderate correlation(.7) between mean steps taken and very active minutes
+```
+ggplot(combined_data, aes(x = mean_steps_id, y = sum_very)) + 
++ geom_point() +
++ labs(title = "Average Steps Taken In A Day Compared to Very Active Minutes", x = "Average Steps", y = "Very Active Minutes")
+```
+
+There appears to be a moderate upwards trend of "very active minutes" increasing while average steps in a day increases
+
+In addition, I completed additional visualizations in Tablea, which can be viewed here: Tableau Bellabeat Dashboard URL
+
+
+**SCREENSHOT OF DASHBOARD**
+
+The descriptive  statistical analyses and visualizations reveal the following smart device usage trends:
+
+- Sedentary minutes took up the majority of participants' days and were consistent throughout the week
+- Average "very active minutes" were also consistent throughout the week around 20 minutes each day
+- Participants on average slept the most on Sundays, which is also the same day that saw the least amount of steps
+- Most steps were taken on Tuesdays and Saturdays
+- The fewest steps were taken at 3:00 AM and the most steps were taken at 6 PM
+- Participants roughly slept around 390 minutes or 6.5 hours per night
+- Users that take more steps per day are more likely to engage in "very active minutes"
 
 ### Suggestions
+
+Several recommendations based on the analysis and exploration can be created for the smart fitness devices:
+ 1. A very small amount of customers use the weight log feature so this doesn't appear to be a selling point. Instead, the focus should be on other features, such as sleep or steps tracking. Further research should be considered to look into how the weight log could be more marketable.
+
+2. The data reveals that when active, participants engage the most in "light" activity and didn't contain many "very active" minutes each day. As an incentive, the company could set up a "level up" feature in which participants can earn points based on the amount of time they were active. Higher levls of activtiy would earn more points. Such a feature can motivate users to engage in more active minutes.
+
+3. On Sundays, there is a 1000 step decrease compared to the other days of the week. On this day, a notification can appear in the morning with a goal to hit a certain number of steps alongside a reward for reaching a 1-week streak. This notification can help close the gap with the number of steps on Sundays and motivate users to use the device each day of the week.
+
+4. The most usage in a single hour is at 6 PM so it seems that most users spend the majority of the work hours during the day and get most of their steps in after work. An ad can be targeted towards working adults that focused on easily tracking steps throughout the busy work day. A reminder notification can appear at 12 PM and 8 PM to increase their activity levels during other break times (such as lunch and after dinner).
+
+5. On average, participants got less than the CDC recommended 7 hours of sleep per night. Marketing efforts should focus on the device's sleep tracking feature since participants who don't get the recommended amount of sleep may want to track their sleep patterns. Consider marketing along with a mediation or habit tracker to improve sleep. 
+
+
+
+
