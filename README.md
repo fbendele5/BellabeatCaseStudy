@@ -115,10 +115,11 @@ hourly_steps$Id <- as.character(hourly_steps$Id)
     ggplot(daily_activity, aes(x = TotalSteps)) +
   geom_boxplot()
 
-![TotalSteps_BoxWhisker](https://github.com/fbendele5/BellabeatCaseStudy/blob/main/TotalSteps_BoxWhisker.png)
-
     ## The majority of the daily total steps revolve around 4000-11000, which indicates that there may be possible outliers on the high end.
 ```
+
+![TotalSteps_BoxWhisker](https://github.com/fbendele5/BellabeatCaseStudy/blob/main/TotalSteps_BoxWhisker.png)
+
 
 ``` steps_upper <- quantile(daily_activity$TotalSteps, .9985, na.rm = TRUE) 
 # This shows that 99.85% of the observations are at 28,680 or below. In general, values above this number are more than 3 standard deviations from the mean, which reveals that they are outliers. 
