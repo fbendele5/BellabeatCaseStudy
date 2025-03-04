@@ -115,6 +115,8 @@ hourly_steps$Id <- as.character(hourly_steps$Id)
     ggplot(daily_activity, aes(x = TotalSteps)) +
   geom_boxplot()
 
+![TotalSteps_BoxWhisker](https://github.com/fbendele5/BellabeatCaseStudy/blob/main/TotalSteps_BoxWhisker.png)
+
     ## The majority of the daily total steps revolve around 4000-11000, which indicates that there may be possible outliers on the high end.
 ```
 
