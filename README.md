@@ -289,6 +289,9 @@ ggplot(data=activity, aes(x=TotalSteps, y=SedentaryMinutes)) +
     geom_smooth() + 
     labs(title="Total Steps Versus Sedentary Minutes", x = "Steps", y = "Minutes")
 ```
+
+![TotalStepsVsSedentaryMinuted](https://github.com/fbendele5/BellabeatCaseStudy/blob/main/TotalStepsVsSedentaryMinuted.png) 
+
 There shows to be no correlation between total daily steps taken and sedentary minutes. This can be confirmed with a simple linear regression:
 
 ```
@@ -327,6 +330,9 @@ ggplot(mean_sleep, aes(x= Id, y = mean_sleep)) +
     theme(axis.text.x = element_text(angle = 90)) +
     geom_hline(yintercept = mean(mean_sleep$mean_sleep), color = "green")
 ```
+
+![AverageMinutesofSleep](https://github.com/fbendele5/BellabeatCaseStudy/blob/main/AverageMinutesofSleep.png)
+
 #This graph displays the average sleep of each participant indivdiually as well as how their sleep compares to the overall average across all participants
 
 Visualize average steps per hour
@@ -337,6 +343,9 @@ ggplot(mean_steps, aes(x = Hour, y = mean_steps)) +
 + theme(axis.text.x = element_text(angle = 90)) +
 + labs(title = "Average Steps Taken Per Hour of Day", x = "Hour", y = "Average Steps")
 ```
+
+![AvgStepsPerDay](https://github.com/fbendele5/BellabeatCaseStudy/blob/main/AvgStepsPerDay.png)
+
 From this graph, the most steps were taken in the evening from 5-7 PM while the least amount of steps were in the middle of the night from 12-4 AM
 
 Now, two data sets that were previously created, activity_id and steps_byId, will be combined to find new relationships between key variables
@@ -365,13 +374,15 @@ cor(num_data)
 ## sd_steps_id       0.9126453  1.00000000
 ```
 
-# Based on the correlation matrix, there is little correlation between the different activity levels
-# There is a moderate correlation(.7) between mean steps taken and very active minutes
+Based on the correlation matrix, there is little correlation between the different activity levels
+There is a moderate correlation(.7) between mean steps taken and very active minutes
 ```
 ggplot(combined_data, aes(x = mean_steps_id, y = sum_very)) + 
 + geom_point() +
 + labs(title = "Average Steps Taken In A Day Compared to Very Active Minutes", x = "Average Steps", y = "Very Active Minutes")
 ```
+
+![AvgStepsVeryActive](https://github.com/fbendele5/BellabeatCaseStudy/blob/main/AvgStepsVeryActive.png)
 
 There appears to be a moderate upwards trend of "very active minutes" increasing while average steps in a day increases
 
