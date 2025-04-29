@@ -1,6 +1,5 @@
 # BellabeatCaseStudy
 
-## Google Data Analytics Capstone Project
 
 ### Background Information 
 
